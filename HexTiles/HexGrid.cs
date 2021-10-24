@@ -1,10 +1,13 @@
 using Godot;
 using System;
+using System.Collections.Generic;
 
 namespace IanByrne.HexTiles
 {
     public class HexGrid
     {
+        private static readonly Vector2 DEFAULT_SIZE = new Vector2(1, (float)Math.Sqrt(3) / 2);
+
         private static readonly Vector3[] DIRECTIONS_FLAT = new Vector3[]
         {
             new Vector3(0, 1, -1),  // N
@@ -29,22 +32,22 @@ namespace IanByrne.HexTiles
             new Vector3(0, 1, -1)   // NW
         };
 
-        private static readonly Vector2 DEFAULT_SIZE = new Vector2(1, (float)Math.Sqrt(3) / 2);
-
-        private readonly Vector3[] DIRECTIONS;
+        private Vector3[] DIRECTIONS;
 
         private Vector2 _scale;
+        private HexMode _mode;
         private Transform2D _transform;
         private Transform2D _inverseTransform;
 
         public HexGrid(HexMode mode, Vector2 scale)
         {
             Scale = scale;
-
-            DIRECTIONS = mode == HexMode.FLAT ? DIRECTIONS_FLAT : DIRECTIONS_POINTY;
+            Mode = mode;
         }
 
         public HexGrid(HexMode mode) : this(mode, Vector2.One) { }
+        public HexGrid(Vector2 scale) : this(HexMode.FLAT, scale) { }
+        public HexGrid() : this(HexMode.FLAT, Vector2.One) { }
 
         public Vector2 Scale
         {
@@ -60,11 +63,26 @@ namespace IanByrne.HexTiles
                 var size = DEFAULT_SIZE * _scale;
 
                 _transform = new Transform2D(
-                    new Vector2(size.x * 3 / 4, -size.y / 2),
-                    new Vector2(0, -size.y),
+                    new Vector2(size.x * 3 / 4, size.y / 2),
+                    new Vector2(0, size.y),
                     Vector2.Zero);
 
                 _inverseTransform = _transform.AffineInverse();
+            }
+        }
+
+        public HexMode Mode
+        {
+            get
+            {
+                return _mode;
+            }
+
+            set
+            {
+                _mode = value;
+
+                DIRECTIONS = _mode == HexMode.FLAT ? DIRECTIONS_FLAT : DIRECTIONS_POINTY;
             }
         }
 
@@ -80,12 +98,12 @@ namespace IanByrne.HexTiles
             return hexCell;
         }
 
-        public HexCell GetNeighbour(HexCell cell, Direction direction)
+        public HexCell? GetNeighbour(HexCell cell, Direction direction)
         {
             var directionVec3 = DIRECTIONS[(int)direction];
 
             if (directionVec3 == Vector3.Inf)
-                throw new InvalidOperationException($"Invalid direction {direction} for mode");
+                return null;
 
             return new HexCell(cell.CubeCoordinates + directionVec3);
         }

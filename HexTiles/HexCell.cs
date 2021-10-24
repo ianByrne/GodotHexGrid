@@ -7,10 +7,12 @@ namespace IanByrne.HexTiles
     {
         public HexCell(Vector3 cubeCoordinates)
         {
-            if (cubeCoordinates.x + cubeCoordinates.y + cubeCoordinates.z != 0)
+            var rounded = cubeCoordinates.RoundCubeCoordinates();
+
+            if (rounded.x + rounded.y + rounded.z != 0)
                 throw new ArgumentException("q + r + s must be 0");
 
-            CubeCoordinates = cubeCoordinates.RoundCubeCoordinates();
+            CubeCoordinates = rounded;
         }
 
         public HexCell(Vector2 axialCoordinates) : this(axialCoordinates.ToCubeCoordinates()) { }
