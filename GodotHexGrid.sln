@@ -1,0 +1,36 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.31729.503
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "GodotHexGrid", "GodotHexGrid.csproj", "{6F524331-F3C4-4DD7-AE3B-BF488D9664C1}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Debugger", "Debugger.csproj", "{F97F64DA-67E2-448D-8516-2F7427C8B882}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		ExportDebug|Any CPU = ExportDebug|Any CPU
+		ExportRelease|Any CPU = ExportRelease|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{6F524331-F3C4-4DD7-AE3B-BF488D9664C1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6F524331-F3C4-4DD7-AE3B-BF488D9664C1}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6F524331-F3C4-4DD7-AE3B-BF488D9664C1}.ExportDebug|Any CPU.ActiveCfg = ExportDebug|Any CPU
+		{6F524331-F3C4-4DD7-AE3B-BF488D9664C1}.ExportDebug|Any CPU.Build.0 = ExportDebug|Any CPU
+		{6F524331-F3C4-4DD7-AE3B-BF488D9664C1}.ExportRelease|Any CPU.ActiveCfg = ExportRelease|Any CPU
+		{6F524331-F3C4-4DD7-AE3B-BF488D9664C1}.ExportRelease|Any CPU.Build.0 = ExportRelease|Any CPU
+		{F97F64DA-67E2-448D-8516-2F7427C8B882}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F97F64DA-67E2-448D-8516-2F7427C8B882}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F97F64DA-67E2-448D-8516-2F7427C8B882}.ExportDebug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F97F64DA-67E2-448D-8516-2F7427C8B882}.ExportDebug|Any CPU.Build.0 = Debug|Any CPU
+		{F97F64DA-67E2-448D-8516-2F7427C8B882}.ExportRelease|Any CPU.ActiveCfg = Debug|Any CPU
+		{F97F64DA-67E2-448D-8516-2F7427C8B882}.ExportRelease|Any CPU.Build.0 = Debug|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {4EE5728B-7EF4-42D3-8B84-267244AA73C2}
+	EndGlobalSection
+EndGlobal
