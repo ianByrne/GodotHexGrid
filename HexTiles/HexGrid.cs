@@ -136,8 +136,8 @@ namespace IanByrne.HexTiles
                 DIRECTIONS = DIRECTIONS_POINTY;
 
                 _transform = new Transform2D(
-                    new Vector2(size.y / 2, size.x * 3 / 4),
                     new Vector2(size.y, 0),
+                    new Vector2(size.y / 2, size.x * 3 / 4),
                     Vector2.Zero);
             }
 
