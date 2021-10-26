@@ -1,9 +1,15 @@
 using Godot;
+using System;
 
 namespace IanByrne.HexTiles
 {
     public static class Extensions
     {
+        /// <summary>
+        /// Convert Axial Coordinates to Cube Coordinates by constraining to x + y + z = 0
+        /// </summary>
+        /// <param name="coordinates">The Vector2</param>
+        /// <returns>The cube coordinates</returns>
         public static Vector3 ToCubeCoordinates(this Vector2 coordinates)
         {
             return new Vector3(coordinates.x, -coordinates.x - coordinates.y, coordinates.y);
@@ -12,8 +18,8 @@ namespace IanByrne.HexTiles
         /// <summary>
         /// Convert Cube Coordinates to Axial Coordinates by discarding y value
         /// </summary>
-        /// <param name="coordinates"></param>
-        /// <returns></returns>
+        /// <param name="coordinates">The Vector3</param>
+        /// <returns>The axial coordinates</returns>
         public static Vector2 ToAxialCoordinates(this Vector3 coordinates)
         {
             return new Vector2(coordinates.x, coordinates.z);
@@ -26,13 +32,13 @@ namespace IanByrne.HexTiles
         /// <returns>Rounded Vector3</returns>
         public static Vector3 RoundCubeCoordinates(this Vector3 vector)
         {
-            int q = (int)Mathf.Round(vector.x);
-            int r = (int)Mathf.Round(vector.y);
-            int s = (int)Mathf.Round(vector.z);
+            int q = (int)Math.Round(vector.x);
+            int r = (int)Math.Round(vector.y);
+            int s = (int)Math.Round(vector.z);
 
-            double q_diff = Mathf.Abs(q - vector.x);
-            double r_diff = Mathf.Abs(r - vector.y);
-            double s_diff = Mathf.Abs(s - vector.z);
+            double q_diff = Math.Abs(q - vector.x);
+            double r_diff = Math.Abs(r - vector.y);
+            double s_diff = Math.Abs(s - vector.z);
 
             if (q_diff > r_diff && q_diff > s_diff)
             {

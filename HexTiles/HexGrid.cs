@@ -1,6 +1,5 @@
 using Godot;
 using System;
-using System.Collections.Generic;
 
 namespace IanByrne.HexTiles
 {
@@ -41,8 +40,10 @@ namespace IanByrne.HexTiles
 
         public HexGrid(HexMode mode, Vector2 scale)
         {
-            Scale = scale;
-            Mode = mode;
+            _mode = mode;
+            _scale = scale;
+
+            SetMembers();
         }
 
         public HexGrid(HexMode mode) : this(mode, Vector2.One) { }
@@ -60,14 +61,7 @@ namespace IanByrne.HexTiles
             {
                 _scale = value;
 
-                var size = DEFAULT_SIZE * _scale;
-
-                _transform = new Transform2D(
-                    new Vector2(size.x * 3 / 4, size.y / 2),
-                    new Vector2(0, size.y),
-                    Vector2.Zero);
-
-                _inverseTransform = _transform.AffineInverse();
+                SetMembers();
             }
         }
 
@@ -82,20 +76,18 @@ namespace IanByrne.HexTiles
             {
                 _mode = value;
 
-                DIRECTIONS = _mode == HexMode.FLAT ? DIRECTIONS_FLAT : DIRECTIONS_POINTY;
+                SetMembers();
             }
         }
 
-        public Vector2 GetHexCenter(HexCell cell)
+        public Vector2 GetHexToPixel(HexCell cell)
         {
             return _transform.Multiply(cell.AxialCoordinates);
         }
 
-        public HexCell GetHexAt(Vector2 coordinates)
+        public HexCell GetPixelToHex(Vector2 coordinates)
         {
-            var hexCell = new HexCell(_inverseTransform.Multiply(coordinates));
-
-            return hexCell;
+            return new HexCell(_inverseTransform.Multiply(coordinates));
         }
 
         public HexCell? GetNeighbour(HexCell cell, Direction direction)
@@ -124,6 +116,32 @@ namespace IanByrne.HexTiles
         public int GetDistance(HexCell from, Vector2 target)
         {
             return GetDistance(from, target.ToCubeCoordinates());
+        }
+
+        private void SetMembers()
+        {
+            var size = DEFAULT_SIZE * _scale;
+
+            if (_mode == HexMode.FLAT)
+            {
+                DIRECTIONS = DIRECTIONS_FLAT;
+
+                _transform = new Transform2D(
+                    new Vector2(size.x * 3 / 4, size.y / 2),
+                    new Vector2(0, size.y),
+                    Vector2.Zero);
+            }
+            else
+            {
+                DIRECTIONS = DIRECTIONS_POINTY;
+
+                _transform = new Transform2D(
+                    new Vector2(size.y / 2, size.x * 3 / 4),
+                    new Vector2(size.y, 0),
+                    Vector2.Zero);
+            }
+
+            _inverseTransform = _transform.AffineInverse();
         }
     }
 }

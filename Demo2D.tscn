@@ -62,3 +62,65 @@ text = "0,0"
 __meta__ = {
 "_edit_use_anchors_": false
 }
+
+[node name="Controls" type="ColorRect" parent="."]
+margin_left = 838.0
+margin_top = 549.0
+margin_right = 1027.0
+margin_bottom = 604.0
+color = Color( 0, 0, 0, 0.698039 )
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="ModeTitle" type="Label" parent="Controls"]
+margin_left = 8.0
+margin_top = 10.0
+margin_right = 59.0
+margin_bottom = 24.0
+text = "MODE:"
+align = 2
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="ModeValue" type="Button" parent="Controls"]
+margin_left = 69.0
+margin_top = 7.0
+margin_right = 136.0
+margin_bottom = 27.0
+focus_mode = 0
+toggle_mode = true
+enabled_focus_mode = 0
+text = "FLAT"
+flat = true
+align = 0
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="ScaleTitle" type="Label" parent="Controls"]
+visible = false
+margin_left = 8.0
+margin_top = 30.0
+margin_right = 59.0
+margin_bottom = 44.0
+text = "SCALE:"
+align = 2
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="ScaleValue" type="LineEdit" parent="Controls"]
+visible = false
+margin_left = 73.0
+margin_top = 26.0
+margin_right = 131.0
+margin_bottom = 50.0
+text = "0,0"
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[connection signal="toggled" from="Controls/ModeValue" to="Centre" method="OnModeToggled"]
+[connection signal="text_changed" from="Controls/ScaleValue" to="Centre" method="OnScaleTextChanged"]
