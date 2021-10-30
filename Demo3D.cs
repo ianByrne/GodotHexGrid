@@ -3,12 +3,9 @@ using IanByrne.HexTiles;
 
 public class Demo3D : Spatial
 {
-    private const HexMode DEFAULT_MODE = HexMode.FLAT;
     private const int DEFAULT_RADIUS = 3;
-    private static readonly Vector2 DEFAULT_SCALE = new Vector2(0.5f, 0.5f);
 
     private CameraGimbal _camera;
-    private HexGrid _hexGrid;
     private CSGPolygon _highlightedCell;
     private Label _mouseCoords;
     private Label _hexCoords;
@@ -16,11 +13,13 @@ public class Demo3D : Spatial
     private Button _modeButton;
     private LineEdit _scaleLineEdit;
 
+    [Export]
+    public HexGrid HexGrid;
+
     public override void _Ready()
     {
         base._Ready();
-
-        _hexGrid = new HexGrid(DEFAULT_MODE, DEFAULT_SCALE);
+        
         _camera = GetNode<CameraGimbal>("../MainCamera");
         _highlightedCell = GetNode<CSGPolygon>("HighlightedCell");
         _mouseCoords = GetNode<Label>("../HUD/Coordinates/MouseValue");
@@ -29,9 +28,9 @@ public class Demo3D : Spatial
         _scaleLineEdit = GetNode<LineEdit>("../HUD/Controls/ScaleValue");
         _cellScene = GD.Load<PackedScene>("res://HexCell3D.tscn");
 
-        _modeButton.Pressed = _hexGrid.Mode == HexMode.FLAT;
-        _modeButton.Text = _hexGrid.Mode.ToString();
-        _scaleLineEdit.Text = $"{_hexGrid.Scale.x} {_hexGrid.Scale.y}";
+        _modeButton.Pressed = HexGrid.Mode == HexMode.FLAT;
+        _modeButton.Text = HexGrid.Mode.ToString();
+        _scaleLineEdit.Text = $"{HexGrid.Scale.x} {HexGrid.Scale.y}";
 
         DrawGrid(DEFAULT_RADIUS);
     }
@@ -57,11 +56,11 @@ public class Demo3D : Spatial
                     _mouseCoords.Text = relativePos.ToString();
 
                 if (_hexCoords != null)
-                    _hexCoords.Text = _hexGrid.GetPixelToHex(relativePos).CubeCoordinates.ToString();
+                    _hexCoords.Text = HexGrid.GetPixelToHex(relativePos).CubeCoordinates.ToString();
 
                 if (_highlightedCell != null)
                 {
-                    var planePos = _hexGrid.GetHexToPixel(_hexGrid.GetPixelToHex(relativePos));
+                    var planePos = HexGrid.GetHexToPixel(HexGrid.GetPixelToHex(relativePos));
                     _highlightedCell.Translation = new Vector3(planePos.x, 0, planePos.y);
                 }
             }
@@ -73,7 +72,7 @@ public class Demo3D : Spatial
         foreach (CSGPolygon cell in GetTree().GetNodesInGroup("cells"))
             cell.QueueFree();
 
-        if (_hexGrid.Mode == HexMode.POINTY)
+        if (HexGrid.Mode == HexMode.POINTY)
             _highlightedCell.RotationDegrees = new Vector3(90, 30, 0);
         else
             _highlightedCell.RotationDegrees = new Vector3(90, 0, 0);
@@ -93,7 +92,7 @@ public class Demo3D : Spatial
 
     private void DrawCell(HexCell cell)
     {
-        var position = _hexGrid.GetHexToPixel(cell);
+        var position = HexGrid.GetHexToPixel(cell);
         var material = new SpatialMaterial();
         material.AlbedoColor = new Color(0, 255, 0);
 
@@ -103,7 +102,7 @@ public class Demo3D : Spatial
         node.Scale = new Vector3(0.009f, 0.009f, 0.009f);
         node.AddToGroup("cells");
 
-        if (_hexGrid.Mode == HexMode.POINTY)
+        if (HexGrid.Mode == HexMode.POINTY)
             node.RotationDegrees = new Vector3(90, 30, 0);
         else
             node.RotationDegrees = new Vector3(90, 0, 0);
@@ -113,8 +112,8 @@ public class Demo3D : Spatial
 
     private void OnModeToggled(bool toggle)
     {
-        _hexGrid.Mode = toggle ? HexMode.FLAT : HexMode.POINTY;
-        _modeButton.Text = _hexGrid.Mode.ToString();
+        HexGrid.Mode = toggle ? HexMode.FLAT : HexMode.POINTY;
+        _modeButton.Text = HexGrid.Mode.ToString();
 
         DrawGrid(DEFAULT_RADIUS);
     }
@@ -124,7 +123,7 @@ public class Demo3D : Spatial
         string x = text.Split(' ')[0];
         string y = text.Split(' ')[1];
 
-        _hexGrid.Scale = new Vector2(float.Parse(x), float.Parse(y));
+        HexGrid.Scale = new Vector2(float.Parse(x), float.Parse(y));
 
         DrawGrid(DEFAULT_RADIUS);
     }

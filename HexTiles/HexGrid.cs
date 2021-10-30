@@ -3,7 +3,7 @@ using System;
 
 namespace IanByrne.HexTiles
 {
-    public class HexGrid
+    public class HexGrid : Reference
     {
         private static readonly Vector2 DEFAULT_SIZE = new Vector2(1, (float)Math.Sqrt(3) / 2);
 
@@ -50,6 +50,7 @@ namespace IanByrne.HexTiles
         public HexGrid(Vector2 scale) : this(HexMode.FLAT, scale) { }
         public HexGrid() : this(HexMode.FLAT, Vector2.One) { }
 
+        [Export]
         public Vector2 Scale
         {
             get
@@ -65,6 +66,7 @@ namespace IanByrne.HexTiles
             }
         }
 
+        [Export]
         public HexMode Mode
         {
             get
@@ -90,13 +92,13 @@ namespace IanByrne.HexTiles
             return new HexCell(_inverseTransform.Multiply(coordinates));
         }
 
-        public HexCell? GetNeighbour(HexCell cell, Direction direction)
+        public HexCell GetNeighbour(HexCell cell, Direction direction)
         {
             var directionVec3 = DIRECTIONS[(int)direction];
 
             if (directionVec3 == Vector3.Inf)
                 return null;
-
+            
             return new HexCell(cell.CubeCoordinates + directionVec3);
         }
 
