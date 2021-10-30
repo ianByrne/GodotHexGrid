@@ -1,16 +1,18 @@
 using Godot;
 using IanByrne.HexTiles;
+using System;
 
 public class Demo2D : Node2D
 {
     private const HexMode DEFAULT_MODE = HexMode.FLAT;
-    private const int DEFAULT_RADIUS = 3;
+    private const int DEFAULT_RADIUS = 5;
     private static readonly Vector2 DEFAULT_SCALE = new Vector2(50, 50);
     
     private HexGrid _hexGrid;
     private Polygon2D _highlightedCell;
     private Label _mouseCoords;
     private Label _hexCoords;
+    private Label _neHexCoords;
     private PackedScene _cellScene;
     private Button _modeButton;
     private LineEdit _scaleLineEdit;
@@ -23,6 +25,7 @@ public class Demo2D : Node2D
         _highlightedCell = GetNode<Polygon2D>("HighlightedCell");
         _mouseCoords = GetNode<Label>("../HUD/Coordinates/MouseValue");
         _hexCoords = GetNode<Label>("../HUD/Coordinates/HexValue");
+        _neHexCoords = GetNode<Label>("../HUD/Coordinates/NeighbourValue");
         _modeButton = GetNode<Button>("../HUD/Controls/ModeValue");
         _scaleLineEdit = GetNode<LineEdit>("../HUD/Controls/ScaleValue");
         _cellScene = GD.Load<PackedScene>("res://HexCell2D.tscn");
@@ -38,19 +41,31 @@ public class Demo2D : Node2D
     {
         base._UnhandledInput(@event);
 
-        if (@event is InputEventMouseMotion mouseMotion)
+        if (@event is InputEventMouseMotion)
         {
-            var wat = GetGlobalMousePosition();
             var relativePos = Transform.AffineInverse().Multiply(GetGlobalMousePosition());
+            var hex = _hexGrid.GetPixelToHex(relativePos);
 
             if (_mouseCoords != null)
                 _mouseCoords.Text = relativePos.ToString();
 
             if (_hexCoords != null)
-                _hexCoords.Text = _hexGrid.GetPixelToHex(relativePos).CubeCoordinates.ToString();
+                _hexCoords.Text = hex.CubeCoordinates.ToString();
+
+            if (_neHexCoords != null)
+                _neHexCoords.Text = _hexGrid.GetNeighbour(hex, Direction.NE)?.CubeCoordinates.ToString();
 
             if (_highlightedCell != null)
-                _highlightedCell.Position = _hexGrid.GetHexToPixel(_hexGrid.GetPixelToHex(relativePos));
+                _highlightedCell.Position = _hexGrid.GetHexToPixel(hex);
+        }
+
+        if (@event is InputEventMouseButton mouseButton && mouseButton.ButtonIndex == (int)ButtonList.Right)
+        {
+            // Toggle obstacle at selected hex
+            var relativePos = Transform.AffineInverse().Multiply(GetGlobalMousePosition());
+            var hex = _hexGrid.GetPixelToHex(relativePos);
+            hex.MovementCost = hex.MovementCost == 0 ? -1 : 0;
+            DrawCell(hex, new Color(255, 255, 0));
         }
     }
 
@@ -64,6 +79,8 @@ public class Demo2D : Node2D
         else
             _highlightedCell.RotationDegrees = 0;
 
+        var random = new Random();
+
         for (int x = -radius; x <= radius; ++x)
         {
             for (int y = -radius; y <= radius; ++y)
@@ -71,18 +88,18 @@ public class Demo2D : Node2D
                 for (int z = -radius; z <= radius; ++z)
                 {
                     if (x + y + z == 0)
-                        DrawCell(new HexCell(x, y, z));
+                        DrawCell(new HexCell(x, y, z), new Color(0, 255, 0));
                 }
             }
         }
     }
 
-    private void DrawCell(HexCell cell)
+    private void DrawCell(HexCell cell, Color colour)
     {
         var node = _cellScene.Instance<Polygon2D>();
         node.Position = _hexGrid.GetHexToPixel(cell);
         node.ZIndex = -1;
-        node.Color = new Color(0, 255, 0);
+        node.Color = colour;
         node.Scale = new Vector2(0.9f, 0.9f);
         node.AddToGroup("cells");
 

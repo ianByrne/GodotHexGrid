@@ -18,7 +18,7 @@ script = ExtResource( 2 )
 
 [node name="Coordinates" type="ColorRect" parent="HUD"]
 margin_left = -3.0
-margin_top = 549.0
+margin_top = 486.0
 margin_right = 186.0
 margin_bottom = 604.0
 color = Color( 0, 0, 0, 0.698039 )
@@ -63,6 +63,27 @@ margin_left = 73.0
 margin_top = 30.0
 margin_right = 124.0
 margin_bottom = 44.0
+text = "0,0"
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="NeighbourTitle" type="Label" parent="HUD/Coordinates"]
+margin_left = 8.0
+margin_top = 50.0
+margin_right = 59.0
+margin_bottom = 64.0
+text = "NE HEX:"
+align = 2
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="NeighbourValue" type="Label" parent="HUD/Coordinates"]
+margin_left = 73.0
+margin_top = 50.0
+margin_right = 124.0
+margin_bottom = 64.0
 text = "0,0"
 __meta__ = {
 "_edit_use_anchors_": false
