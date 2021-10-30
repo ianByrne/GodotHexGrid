@@ -6,10 +6,10 @@ public class Demo2D : Node2D
     private const HexMode DEFAULT_MODE = HexMode.FLAT;
     private const int DEFAULT_RADIUS = 3;
     private static readonly Vector2 DEFAULT_SCALE = new Vector2(50, 50);
-
+    
     private HexGrid _hexGrid;
     private Polygon2D _highlightedCell;
-    private Label _screenCoords;
+    private Label _mouseCoords;
     private Label _hexCoords;
     private PackedScene _cellScene;
     private Button _modeButton;
@@ -17,13 +17,15 @@ public class Demo2D : Node2D
 
     public override void _Ready()
     {
+        base._Ready();
+
         _hexGrid = new HexGrid(DEFAULT_MODE, DEFAULT_SCALE);
         _highlightedCell = GetNode<Polygon2D>("HighlightedCell");
-        _screenCoords = GetNode<Label>("../Coordinates/ScreenValue");
-        _hexCoords = GetNode<Label>("../Coordinates/HexValue");
-        _modeButton = GetNode<Button>("../Controls/ModeValue");
-        _scaleLineEdit = GetNode<LineEdit>("../Controls/ScaleValue");
-        _cellScene = GD.Load<PackedScene>("res://HexCell.tscn");
+        _mouseCoords = GetNode<Label>("../HUD/Coordinates/MouseValue");
+        _hexCoords = GetNode<Label>("../HUD/Coordinates/HexValue");
+        _modeButton = GetNode<Button>("../HUD/Controls/ModeValue");
+        _scaleLineEdit = GetNode<LineEdit>("../HUD/Controls/ScaleValue");
+        _cellScene = GD.Load<PackedScene>("res://HexCell2D.tscn");
 
         _modeButton.Pressed = _hexGrid.Mode == HexMode.FLAT;
         _scaleLineEdit.Text = $"{_hexGrid.Scale.x} {_hexGrid.Scale.y}";
@@ -33,12 +35,15 @@ public class Demo2D : Node2D
 
     public override void _UnhandledInput(InputEvent @event)
     {
+        base._UnhandledInput(@event);
+
         if (@event is InputEventMouseMotion mouseMotion)
         {
-            var relativePos = Transform.AffineInverse().Multiply(mouseMotion.Position);
+            var wat = GetGlobalMousePosition();
+            var relativePos = Transform.AffineInverse().Multiply(GetGlobalMousePosition());
 
-            if (_screenCoords != null)
-                _screenCoords.Text = relativePos.ToString();
+            if (_mouseCoords != null)
+                _mouseCoords.Text = relativePos.ToString();
 
             if (_hexCoords != null)
                 _hexCoords.Text = _hexGrid.GetPixelToHex(relativePos).AxialCoordinates.ToString();
