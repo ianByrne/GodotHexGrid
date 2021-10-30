@@ -3,7 +3,7 @@ using IanByrne.HexTiles;
 
 public class Demo3D : Spatial
 {
-    private const HexMode DEFAULT_MODE = HexMode.FLAT;
+    private const HexMode DEFAULT_MODE = HexMode.POINTY;
     private const int DEFAULT_RADIUS = 3;
     private static readonly Vector2 DEFAULT_SCALE = new Vector2(0.5f, 0.5f);
 
@@ -30,6 +30,7 @@ public class Demo3D : Spatial
         _cellScene = GD.Load<PackedScene>("res://HexCell3D.tscn");
 
         _modeButton.Pressed = _hexGrid.Mode == HexMode.FLAT;
+        _modeButton.Text = _hexGrid.Mode.ToString();
         _scaleLineEdit.Text = $"{_hexGrid.Scale.x} {_hexGrid.Scale.y}";
 
         DrawGrid(DEFAULT_RADIUS);
@@ -73,7 +74,7 @@ public class Demo3D : Spatial
             cell.QueueFree();
 
         if (_hexGrid.Mode == HexMode.POINTY)
-            _highlightedCell.RotationDegrees = new Vector3(90 + 30, 0, 0);
+            _highlightedCell.RotationDegrees = new Vector3(90, 30, 0);
         else
             _highlightedCell.RotationDegrees = new Vector3(90, 0, 0);
 
@@ -92,18 +93,18 @@ public class Demo3D : Spatial
 
     private void DrawCell(HexCell cell)
     {
-        var planePos = _hexGrid.GetHexToPixel(cell);
+        var position = _hexGrid.GetHexToPixel(cell);
         var material = new SpatialMaterial();
         material.AlbedoColor = new Color(0, 255, 0);
 
         var node = _cellScene.Instance<CSGPolygon>();
-        node.Translation = new Vector3(planePos.x, 0, planePos.y);
+        node.Translation = new Vector3(position.x, 0, position.y);
         node.Material = material;
         node.Scale = new Vector3(0.009f, 0.009f, 0.009f);
         node.AddToGroup("cells");
 
         if (_hexGrid.Mode == HexMode.POINTY)
-            node.RotationDegrees = new Vector3(90 + 30, 0, 0);
+            node.RotationDegrees = new Vector3(90, 30, 0);
         else
             node.RotationDegrees = new Vector3(90, 0, 0);
 

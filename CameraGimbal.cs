@@ -54,12 +54,12 @@ public class CameraGimbal : Spatial
         if (@event is InputEventMouseMotion mouseMotion && Clicking)
         {
             if (mouseMotion.Relative.x != 0)
-                RotateObjectLocal(Vector3.Up, mouseMotion.Relative.x * _mouseSensitivity);
+                RotateObjectLocal(Vector3.Up, -mouseMotion.Relative.x * _mouseSensitivity);
 
             if (mouseMotion.Relative.y != 0)
             {
                 float yRotation = Mathf.Clamp(mouseMotion.Relative.y, -30, 30);
-                _innerGimbal.RotateObjectLocal(Vector3.Right, yRotation * _mouseSensitivity);
+                _innerGimbal.RotateObjectLocal(Vector3.Right, -yRotation * _mouseSensitivity);
             }
         }
 
