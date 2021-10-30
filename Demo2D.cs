@@ -28,6 +28,7 @@ public class Demo2D : Node2D
         _cellScene = GD.Load<PackedScene>("res://HexCell2D.tscn");
 
         _modeButton.Pressed = _hexGrid.Mode == HexMode.FLAT;
+        _modeButton.Text = _hexGrid.Mode.ToString();
         _scaleLineEdit.Text = $"{_hexGrid.Scale.x} {_hexGrid.Scale.y}";
 
         DrawGrid(DEFAULT_RADIUS);
@@ -46,7 +47,7 @@ public class Demo2D : Node2D
                 _mouseCoords.Text = relativePos.ToString();
 
             if (_hexCoords != null)
-                _hexCoords.Text = _hexGrid.GetPixelToHex(relativePos).AxialCoordinates.ToString();
+                _hexCoords.Text = _hexGrid.GetPixelToHex(relativePos).CubeCoordinates.ToString();
 
             if (_highlightedCell != null)
                 _highlightedCell.Position = _hexGrid.GetHexToPixel(_hexGrid.GetPixelToHex(relativePos));

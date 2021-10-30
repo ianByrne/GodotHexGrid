@@ -3,7 +3,7 @@ using IanByrne.HexTiles;
 
 public class Demo3D : Spatial
 {
-    private const HexMode DEFAULT_MODE = HexMode.POINTY;
+    private const HexMode DEFAULT_MODE = HexMode.FLAT;
     private const int DEFAULT_RADIUS = 3;
     private static readonly Vector2 DEFAULT_SCALE = new Vector2(0.5f, 0.5f);
 
@@ -57,7 +57,7 @@ public class Demo3D : Spatial
                     _mouseCoords.Text = relativePos.ToString();
 
                 if (_hexCoords != null)
-                    _hexCoords.Text = _hexGrid.GetPixelToHex(relativePos).AxialCoordinates.ToString();
+                    _hexCoords.Text = _hexGrid.GetPixelToHex(relativePos).CubeCoordinates.ToString();
 
                 if (_highlightedCell != null)
                 {
