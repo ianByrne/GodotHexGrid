@@ -17,9 +17,11 @@ namespace IanByrne.HexTiles
         }
 
         public HexCell(Vector2 axialCoordinates, int movementCost = 0) : this(axialCoordinates.ToCubeCoordinates(), movementCost) { }
-        //public HexCell(int q, int r, int movementCost = 0) : this(new Vector2(q, r), movementCost) { }
         public HexCell(int q, int r, int s, int movementCost = 0) : this(new Vector3(q, r, s), movementCost) { }
 
+        /// <summary>
+        /// A value of -1 is impassable
+        /// </summary>
         public int MovementCost { get; set; }
         public Vector3 CubeCoordinates { get; set; }
         public Vector2 AxialCoordinates => CubeCoordinates.ToAxialCoordinates();

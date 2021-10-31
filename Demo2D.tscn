@@ -49,7 +49,7 @@ __meta__ = {
 "_edit_use_anchors_": false
 }
 
-[node name="HexTitle" type="Label" parent="HUD/Coordinates"]
+[node name="CellTitle" type="Label" parent="HUD/Coordinates"]
 margin_left = 8.0
 margin_top = 30.0
 margin_right = 59.0
@@ -60,7 +60,7 @@ __meta__ = {
 "_edit_use_anchors_": false
 }
 
-[node name="HexValue" type="Label" parent="HUD/Coordinates"]
+[node name="CellValue" type="Label" parent="HUD/Coordinates"]
 margin_left = 73.0
 margin_top = 30.0
 margin_right = 124.0
@@ -106,28 +106,4 @@ __meta__ = {
 "_edit_use_anchors_": false
 }
 
-[node name="ScaleTitle" type="Label" parent="HUD/Controls"]
-visible = false
-margin_left = 8.0
-margin_top = 30.0
-margin_right = 59.0
-margin_bottom = 44.0
-text = "SCALE:"
-align = 2
-__meta__ = {
-"_edit_use_anchors_": false
-}
-
-[node name="ScaleValue" type="LineEdit" parent="HUD/Controls"]
-visible = false
-margin_left = 73.0
-margin_top = 26.0
-margin_right = 131.0
-margin_bottom = 50.0
-text = "0,0"
-__meta__ = {
-"_edit_use_anchors_": false
-}
-
 [connection signal="toggled" from="HUD/Controls/ModeValue" to="Centre" method="OnModeToggled"]
-[connection signal="text_changed" from="HUD/Controls/ScaleValue" to="Centre" method="OnScaleTextChanged"]

@@ -34,22 +34,22 @@ namespace IanByrne.HexTiles
 
         private Vector3?[] DIRECTIONS;
 
-        private Dictionary<Vector2, HexCell> _grid;
+        private Dictionary<Vector2, HexCell> _cells; // AxialCoordinates => HexCell
         private Vector2 _scale;
         private HexMode _mode;
         private Transform2D _transform;
         private Transform2D _inverseTransform;
 
-        public HexGrid(HexMode mode, Vector2 scale, int sizeX, int sizeY)
+        public HexGrid(HexMode mode, Vector2 scale)
         {
-            _grid = new Dictionary<Vector2, HexCell>();
+            _cells = new Dictionary<Vector2, HexCell>();
             _mode = mode;
             _scale = scale;
 
             SetMembers();
         }
 
-        public HexGrid() : this(HexMode.FLAT, Vector2.One, 10, 10) { }
+        public HexGrid() : this(HexMode.FLAT, Vector2.One) { }
 
         [Export]
         public Vector2 Scale
@@ -83,45 +83,44 @@ namespace IanByrne.HexTiles
             }
         }
 
-        public void SetCell(HexCell cell)
+        public void SetCellAtAxialCoords(HexCell cell)
         {
-            _grid[cell.AxialCoordinates] = cell;
+            _cells[cell.AxialCoordinates] = cell;
         }
 
-        public HexCell? GetCell(HexCell cell)
+        public HexCell? GetCellAtAxialCoords(Vector2 coordinates)
         {
-            if (_grid.ContainsKey(cell.AxialCoordinates))
-                return _grid[cell.AxialCoordinates];
+            if (_cells.TryGetValue(coordinates, out HexCell hexCell))
+                return hexCell;
             else
                 return null;
         }
 
-        public Vector2 GetHexToPixel(HexCell cell)
+        public Vector2 GetPixelAtCell(HexCell cell)
         {
             return _transform.Multiply(cell.AxialCoordinates);
         }
 
-        public HexCell? GetPixelToHex(Vector2 coordinates)
+        public HexCell? GetCellAtPixel(Vector2 coordinates)
         {
             var cell = new HexCell(_inverseTransform.Multiply(coordinates));
-            return GetCell(cell);
 
-            //return new HexCell(_inverseTransform.Multiply(coordinates));
+            return GetCellAtAxialCoords(cell.AxialCoordinates);
         }
 
-        public HexCell? GetNeighbour(HexCell cell, Direction direction)
+        public HexCell? GetNeighbourCell(HexCell homeCell, Direction direction)
         {
             var directionVec3 = DIRECTIONS[(int)direction];
 
             if (!directionVec3.HasValue)
                 return null;
-            
-            return GetCell(new HexCell(cell.CubeCoordinates + directionVec3.Value));
 
-            //return new HexCell(cell.CubeCoordinates + directionVec3.Value);
+            var neighbourCell = new HexCell(homeCell.CubeCoordinates + directionVec3.Value);
+
+            return GetCellAtAxialCoords(neighbourCell.AxialCoordinates);
         }
 
-        public int GetDistance(HexCell from, Vector3 target)
+        public int GetDistanceFromCell(HexCell from, Vector3 target)
         {
             return (int)(
                 Math.Abs(from.CubeCoordinates.x - target.x) +
@@ -129,14 +128,14 @@ namespace IanByrne.HexTiles
                 Math.Abs(from.CubeCoordinates.z - target.z)) / 2;
         }
 
-        public int GetDistance(HexCell from, HexCell target)
+        public int GetDistanceFromCell(HexCell from, HexCell target)
         {
-            return GetDistance(from, target.CubeCoordinates);
+            return GetDistanceFromCell(from, target.CubeCoordinates);
         }
 
-        public int GetDistance(HexCell from, Vector2 target)
+        public int GetDistanceFromCell(HexCell from, Vector2 target)
         {
-            return GetDistance(from, target.ToCubeCoordinates());
+            return GetDistanceFromCell(from, target.ToCubeCoordinates());
         }
 
         private void SetMembers()
