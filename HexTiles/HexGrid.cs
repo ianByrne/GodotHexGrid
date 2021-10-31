@@ -1,5 +1,6 @@
 using Godot;
 using System;
+using System.Collections.Generic;
 
 namespace IanByrne.HexTiles
 {
@@ -7,48 +8,48 @@ namespace IanByrne.HexTiles
     {
         private static readonly Vector2 DEFAULT_SIZE = new Vector2(1, (float)Math.Sqrt(3) / 2);
 
-        private static readonly Vector3[] DIRECTIONS_FLAT = new Vector3[]
+        private static readonly Vector3?[] DIRECTIONS_FLAT = new Vector3?[]
         {
             new Vector3(0, 1, -1),  // N
             new Vector3(1, 0, -1),  // NE
-            Vector3.Inf,            // E (there's no eastern hex)
+            null,                   // E (there's no eastern hex)
             new Vector3(1, -1, 0),  // SE
             new Vector3(0, -1, 1),  // S
             new Vector3(-1, 0, 1),  // SW
-            Vector3.Inf,            // W (there's no western hex)
+            null,                   // W (there's no western hex)
             new Vector3(-1, 1, 0)   // NW
         };
 
-        private static readonly Vector3[] DIRECTIONS_POINTY = new Vector3[]
+        private static readonly Vector3?[] DIRECTIONS_POINTY = new Vector3?[]
         {
-            Vector3.Inf,            // N (there's no northern hex)
+            null,                   // N (there's no northern hex)
             new Vector3(1, 0, -1),  // NE
             new Vector3(1, -1, 0),  // E
             new Vector3(0, -1, 1),  // SE
-            Vector3.Inf,            // S (there's no southern hex)
+            null,                   // S (there's no southern hex)
             new Vector3(-1, 0, 1),  // SW
             new Vector3(-1, 1, 0),  // W
             new Vector3(0, 1, -1)   // NW
         };
 
-        private Vector3[] DIRECTIONS;
+        private Vector3?[] DIRECTIONS;
 
+        private Dictionary<Vector2, HexCell> _grid;
         private Vector2 _scale;
         private HexMode _mode;
         private Transform2D _transform;
         private Transform2D _inverseTransform;
 
-        public HexGrid(HexMode mode, Vector2 scale)
+        public HexGrid(HexMode mode, Vector2 scale, int sizeX, int sizeY)
         {
+            _grid = new Dictionary<Vector2, HexCell>();
             _mode = mode;
             _scale = scale;
 
             SetMembers();
         }
 
-        public HexGrid(HexMode mode) : this(mode, Vector2.One) { }
-        public HexGrid(Vector2 scale) : this(HexMode.FLAT, scale) { }
-        public HexGrid() : this(HexMode.FLAT, Vector2.One) { }
+        public HexGrid() : this(HexMode.FLAT, Vector2.One, 10, 10) { }
 
         [Export]
         public Vector2 Scale
@@ -82,24 +83,42 @@ namespace IanByrne.HexTiles
             }
         }
 
+        public void SetCell(HexCell cell)
+        {
+            _grid[cell.AxialCoordinates] = cell;
+        }
+
+        public HexCell? GetCell(HexCell cell)
+        {
+            if (_grid.ContainsKey(cell.AxialCoordinates))
+                return _grid[cell.AxialCoordinates];
+            else
+                return null;
+        }
+
         public Vector2 GetHexToPixel(HexCell cell)
         {
             return _transform.Multiply(cell.AxialCoordinates);
         }
 
-        public HexCell GetPixelToHex(Vector2 coordinates)
+        public HexCell? GetPixelToHex(Vector2 coordinates)
         {
-            return new HexCell(_inverseTransform.Multiply(coordinates));
+            var cell = new HexCell(_inverseTransform.Multiply(coordinates));
+            return GetCell(cell);
+
+            //return new HexCell(_inverseTransform.Multiply(coordinates));
         }
 
-        public HexCell GetNeighbour(HexCell cell, Direction direction)
+        public HexCell? GetNeighbour(HexCell cell, Direction direction)
         {
             var directionVec3 = DIRECTIONS[(int)direction];
 
-            if (directionVec3 == Vector3.Inf)
+            if (!directionVec3.HasValue)
                 return null;
             
-            return new HexCell(cell.CubeCoordinates + directionVec3);
+            return GetCell(new HexCell(cell.CubeCoordinates + directionVec3.Value));
+
+            //return new HexCell(cell.CubeCoordinates + directionVec3.Value);
         }
 
         public int GetDistance(HexCell from, Vector3 target)

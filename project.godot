@@ -11,7 +11,7 @@ config_version=4
 [application]
 
 config/name="GodotHexGrid"
-run/main_scene="res://Demo2D.tscn"
+run/main_scene="res://Demo3D.tscn"
 config/icon="res://icon.png"
 
 [input]

@@ -38,36 +38,39 @@ public class Demo2D : Node2D
     {
         base._UnhandledInput(@event);
 
+        var relativePos = Transform.AffineInverse().Multiply(GetGlobalMousePosition());
+        var hex = HexGrid.GetPixelToHex(relativePos);
+
         if (@event is InputEventMouseMotion)
         {
-            var relativePos = Transform.AffineInverse().Multiply(GetGlobalMousePosition());
-            var hex = HexGrid.GetPixelToHex(relativePos);
-
             if (_mouseCoords != null)
                 _mouseCoords.Text = relativePos.ToString();
 
-            if (_hexCoords != null)
-                _hexCoords.Text = hex.CubeCoordinates.ToString();
+            if (_hexCoords != null && hex.HasValue)
+                _hexCoords.Text = hex.Value.CubeCoordinates.ToString();
 
-            if (_highlightedCell != null)
-                _highlightedCell.Position = HexGrid.GetHexToPixel(hex);
+            if (_highlightedCell != null && hex.HasValue)
+                _highlightedCell.Position = HexGrid.GetHexToPixel(hex.Value);
         }
 
         if (@event is InputEventMouseButton mouseButton && mouseButton.ButtonIndex == (int)ButtonList.Right && mouseButton.Pressed)
         {
             // Toggle obstacle at selected hex
-            var relativePos = Transform.AffineInverse().Multiply(GetGlobalMousePosition());
-            var cell = HexGrid.GetPixelToHex(relativePos);
+            if (hex.HasValue)
+            {
+                // Undraw old cell
+                foreach (Polygon2D cell in GetTree().GetNodesInGroup(hex.Value.CubeCoordinates.ToString()))
+                    cell.QueueFree();
 
-            // Remove old cell
-            foreach (Polygon2D hex in GetTree().GetNodesInGroup(cell.CubeCoordinates.ToString()))
-                hex.QueueFree();
+                var newCell = hex.Value;
 
-            cell.MovementCost = cell.MovementCost == 0 ? -1 : 0;
-            var colour = cell.MovementCost == -1 ? new Color(255, 255, 0) : new Color(0, 255, 0);
+                newCell.MovementCost = newCell.MovementCost == 0 ? -1 : 0;
+                var colour = newCell.MovementCost == -1 ? new Color(255, 255, 0) : new Color(0, 255, 0);
 
-            // Add new cell
-            DrawCell(cell, colour);
+                // Add new cell
+                HexGrid.SetCell(newCell);
+                DrawCell(newCell, colour);
+            }
         }
     }
 
@@ -90,7 +93,11 @@ public class Demo2D : Node2D
                 for (int z = -radius; z <= radius; ++z)
                 {
                     if (x + y + z == 0)
-                        DrawCell(new HexCell(x, y, z), new Color(0, 255, 0));
+                    {
+                        var cell = new HexCell(x, y, z);
+                        HexGrid.SetCell(cell);
+                        DrawCell(cell, new Color(0, 255, 0));
+                    }
                 }
             }
         }
