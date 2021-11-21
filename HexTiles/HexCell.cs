@@ -5,7 +5,7 @@ namespace IanByrne.HexTiles
 {
     public struct HexCell
     {
-        public HexCell(Vector3 cubeCoordinates, int movementCost = 0, int index = -1)
+        public HexCell(Vector3 cubeCoordinates, int movementCost = 0)
         {
             var rounded = cubeCoordinates.RoundCubeCoordinates();
 
