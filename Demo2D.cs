@@ -1,6 +1,7 @@
 using Godot;
 using IanByrne.HexTiles;
 using System;
+using System.Collections.Generic;
 
 public class Demo2D : Node2D
 {
@@ -65,7 +66,7 @@ public class Demo2D : Node2D
                 var colour = newCell.MovementCost == -1 ? new Color(255, 255, 0) : new Color(0, 255, 0);
 
                 // Add new cell
-                HexGrid.SetCellAtAxialCoords(newCell);
+                HexGrid.SetCell(newCell);
                 DrawCell(newCell, colour);
             }
         }
@@ -81,6 +82,8 @@ public class Demo2D : Node2D
         else
             _highlightedCell.RotationDegrees = 0;
 
+        var cells = new Dictionary<Vector2, HexCell>();
+
         for (int x = -radius; x <= radius; ++x)
         {
             for (int y = -radius; y <= radius; ++y)
@@ -90,12 +93,14 @@ public class Demo2D : Node2D
                     if (x + y + z == 0)
                     {
                         var cell = new HexCell(x, y, z);
-                        HexGrid.SetCellAtAxialCoords(cell);
+                        cells.Add(cell.AxialCoordinates, cell);
                         DrawCell(cell, new Color(0, 255, 0));
                     }
                 }
             }
         }
+
+        HexGrid.SetCells(cells);
     }
 
     private void DrawCell(HexCell cell, Color colour)

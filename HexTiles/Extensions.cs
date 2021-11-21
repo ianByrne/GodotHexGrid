@@ -30,6 +30,16 @@ namespace IanByrne.HexTiles
         /// </summary>
         /// <param name="vector">The Vector3</param>
         /// <returns>Rounded Vector3</returns>
+        public static Vector2 RoundAxialCoordinates(this Vector2 vector)
+        {
+            return vector.ToCubeCoordinates().RoundCubeCoordinates().ToAxialCoordinates();
+        }
+
+        /// <summary>
+        /// Round a Vector3 to absolute values, but maintain the x + y + z = 0 constraint
+        /// </summary>
+        /// <param name="vector">The Vector3</param>
+        /// <returns>Rounded Vector3</returns>
         public static Vector3 RoundCubeCoordinates(this Vector3 vector)
         {
             int q = (int)Math.Round(vector.x);

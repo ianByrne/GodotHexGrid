@@ -1,5 +1,6 @@
 using Godot;
 using IanByrne.HexTiles;
+using System.Collections.Generic;
 
 public class Demo3D : Spatial
 {
@@ -9,6 +10,7 @@ public class Demo3D : Spatial
     private Label _cellCoords;
     private PackedScene _cellScene;
     private Button _modeButton;
+    private RigidBody _player;
 
     [Export]
     public HexGrid HexGrid;
@@ -24,6 +26,7 @@ public class Demo3D : Spatial
         _mouseCoords = GetNode<Label>("../HUD/Coordinates/MouseValue");
         _cellCoords = GetNode<Label>("../HUD/Coordinates/CellValue");
         _modeButton = GetNode<Button>("../HUD/Controls/ModeValue");
+        _player = GetNode<RigidBody>("../Player");
         _cellScene = GD.Load<PackedScene>("res://HexCell3D.tscn");
 
         _modeButton.Pressed = HexGrid.Mode == HexMode.FLAT;
@@ -41,9 +44,9 @@ public class Demo3D : Spatial
             var spaceState = GetWorld().DirectSpaceState;
             var rayOrigin = _camera.Camera.ProjectRayOrigin(mouse.Position);
             var rayEnd = _camera.Camera.ProjectRayNormal(mouse.Position) * 2000;
-            var intersection = spaceState.IntersectRay(rayOrigin, rayEnd, null, 0x7FFFFFFF, false, true);
+            var intersection = spaceState.IntersectRay(rayOrigin, rayEnd);
 
-            if (intersection.Count > 0)
+            if (intersection.Contains("position"))
             {
                 var relativePosV3 = Transform.AffineInverse().Xform((Vector3)intersection["position"]);
                 var relativePos = new Vector2(relativePosV3.x, relativePosV3.z);
@@ -55,7 +58,7 @@ public class Demo3D : Spatial
                         _mouseCoords.Text = relativePos.ToString();
 
                     if (_cellCoords != null && cell.HasValue)
-                        _cellCoords.Text = cell.Value.CubeCoordinates.ToString();
+                        _cellCoords.Text = cell.Value.Index.ToString() + " " + cell.Value.CubeCoordinates.ToString();
 
                     if (_highlightedCell != null && cell.HasValue)
                     {
@@ -64,21 +67,49 @@ public class Demo3D : Spatial
                     }
                 }
 
-                if (@event is InputEventMouseButton mouseButton && mouseButton.ButtonIndex == (int)ButtonList.Right && mouseButton.Pressed && cell.HasValue)
+                if (@event is InputEventMouseButton mouseButton && cell.HasValue)
                 {
-                    // Toggle obstacle at selected hex
-                    // Undraw old cell
-                    foreach (CSGPolygon polygon in GetTree().GetNodesInGroup(cell.Value.CubeCoordinates.ToString()))
-                        polygon.QueueFree();
+                    if (mouseButton.ButtonIndex == (int)ButtonList.Right && mouseButton.Pressed)
+                    {
+                        // Toggle obstacle at selected hex
+                        // Undraw old cell
+                        foreach (CSGPolygon polygon in GetTree().GetNodesInGroup(cell.Value.CubeCoordinates.ToString()))
+                            polygon.QueueFree();
 
-                    var newCell = cell.Value;
+                        var newCell = cell.Value;
 
-                    newCell.MovementCost = newCell.MovementCost == 0 ? -1 : 0;
-                    var colour = newCell.MovementCost == -1 ? new Color(255, 255, 0) : new Color(0, 255, 0);
+                        newCell.MovementCost = newCell.MovementCost == 0 ? -1 : 0;
+                        var colour = newCell.MovementCost == -1 ? new Color(255, 255, 0) : new Color(0, 255, 0);
 
-                    // Add new cell
-                    HexGrid.SetCellAtAxialCoords(newCell);
-                    DrawCell(newCell, colour);
+                        // Add new cell
+                        HexGrid.SetCell(newCell);
+                        DrawCell(newCell, colour);
+                    }
+
+                    if (mouseButton.ButtonIndex == (int)ButtonList.Left && mouseButton.Pressed)
+                    {
+                        // Move player to selected hex
+                        var path = HexGrid.GetAStarPath(new HexCell(), cell.Value);
+
+                        //// Draw ring?
+                        //var cells = HexGrid.GetSpiral(cell.Value, 3);
+
+                        // Undraw old cells
+                        DrawGrid(GridRadius);
+                        foreach (var vec2 in path)
+                        {
+                            var thisCell = new HexCell(vec2);
+
+                            foreach (CSGPolygon polygon in GetTree().GetNodesInGroup(thisCell.CubeCoordinates.ToString()))
+                                polygon.QueueFree();
+
+                            var colour = new Color(255, 0, 0);
+
+                            // Add new cell
+                            HexGrid.SetCell(thisCell);
+                            DrawCell(thisCell, colour);
+                        }
+                    }
                 }
             }
         }
@@ -94,6 +125,8 @@ public class Demo3D : Spatial
         else
             _highlightedCell.RotationDegrees = new Vector3(90, 0, 0);
 
+        var cells = new Dictionary<Vector2, HexCell>();
+
         for (int x = -radius; x <= radius; ++x)
         {
             for (int y = -radius; y <= radius; ++y)
@@ -103,12 +136,14 @@ public class Demo3D : Spatial
                     if (x + y + z == 0)
                     {
                         var cell = new HexCell(x, y, z);
-                        HexGrid.SetCellAtAxialCoords(cell);
+                        cells.Add(cell.AxialCoordinates, cell);
                         DrawCell(cell, new Color(0, 255, 0));
                     }
                 }
             }
         }
+
+        HexGrid.SetCells(cells);
     }
 
     private void DrawCell(HexCell cell, Color colour)
