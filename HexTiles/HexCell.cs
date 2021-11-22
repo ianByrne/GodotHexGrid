@@ -43,8 +43,10 @@ namespace IanByrne.HexTiles
                 return 0;
 
             // Count the number of cells in the filled inner spiral
-            var spiralCells = HexGrid.GetCubeCoordinateSpiral(cubeCoordinates, distanceFromOrigin - 1);
-            int fill = spiralCells.Length;
+            int innerSpiral = 1; // Origin
+
+            for (int i = 1; i < distanceFromOrigin; ++i)
+                innerSpiral += 6 * i;
 
             // Count the remaining number of cells on the outer ring
             // It will be something between 1 and distanceFromOrigin * 6
@@ -56,7 +58,7 @@ namespace IanByrne.HexTiles
                 for (int j = 0; j < distanceFromOrigin; ++j)
                 {
                     if (neighbour == cubeCoordinates)
-                        return fill + outerRing - 1;
+                        return innerSpiral + outerRing - 1;
 
                     ++outerRing;
 
@@ -64,7 +66,7 @@ namespace IanByrne.HexTiles
                 }
             }
 
-            return fill + outerRing - 1;
+            return innerSpiral + outerRing - 1;
         }
     }
 }

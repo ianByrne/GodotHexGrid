@@ -73,7 +73,7 @@ namespace IanByrne.HexTiles
         {
             var directionVec3 = DIRECTIONS[direction] * offset;
 
-            return (from + directionVec3).RoundCubeCoordinates();
+            return from + directionVec3;
         }
 
         public static Vector3[] GetCubeCoordinateRing(Vector3 from, int radius)
@@ -151,7 +151,7 @@ namespace IanByrne.HexTiles
 
             foreach (var direction in DIRECTIONS)
             {
-                neighbours.Add((from + direction).RoundCubeCoordinates());
+                neighbours.Add(from + direction);
             }
 
             return neighbours.ToArray();
@@ -163,7 +163,7 @@ namespace IanByrne.HexTiles
 
             foreach (var direction in DIRECTIONS)
             {
-                var cell = GetCell((from.CubeCoordinates + direction).RoundCubeCoordinates());
+                var cell = GetCell(from.CubeCoordinates + direction);
 
                 if (cell.HasValue)
                     neighbours.Add(cell.Value);
